@@ -42,6 +42,7 @@ public class ExampleGWT implements EntryPoint {
   private ArrayList<String> stocks = new ArrayList<String>();
   private static final int REFRESH_INTERVAL = 5000; // ms
   private StockPriceServiceAsync stockPriceSvc = GWT.create(StockPriceService.class);
+  private Label errorMsgLabel = new Label();
 
   public void onModuleLoad() {
     stocksFlexTable.setText(0, 0, "Symbol");
@@ -61,7 +62,11 @@ public class ExampleGWT implements EntryPoint {
     addPanel.add(addStockButton);
     addPanel.addStyleName("addPanel");
 
+    errorMsgLabel.setStyleName("errorMessage");
+    errorMsgLabel.setVisible(false);
+
     // Assemble Main panel.
+    mainPanel.add(errorMsgLabel);
     mainPanel.add(stocksFlexTable);
     mainPanel.add(addPanel);
     mainPanel.add(lastUpdatedLabel);
@@ -139,7 +144,13 @@ public class ExampleGWT implements EntryPoint {
     // Set up the callback object.
     AsyncCallback<StockPrice[]> callback = new AsyncCallback<StockPrice[]>() {
       public void onFailure(Throwable caught) {
-        // TODO: Do something with errors.
+        String details = caught.getMessage();
+        if (caught instanceof DelistedException) {
+          details = "Company '" + ((DelistedException) caught).getSymbol() + "' was delisted";
+        }
+
+        errorMsgLabel.setText("Error: " + details);
+        errorMsgLabel.setVisible(true);
       }
 
       public void onSuccess(StockPrice[] result) {
@@ -149,16 +160,20 @@ public class ExampleGWT implements EntryPoint {
 
     // Make the call to the stock price service.
     stockPriceSvc.getPrices(stocks.toArray(new String[0]), callback);
+
   }
 
   private void updateTable(StockPrice[] prices) {
-    for (int i = 0; i < prices.length; i++) {
+    for (int i=0; i < prices.length; i++) {
       updateTable(prices[i]);
     }
-    DateTimeFormat dateFormat = DateTimeFormat.getFormat(
-            DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM);
-    lastUpdatedLabel.setText("Last update : "
-            + dateFormat.format(new Date()));
+
+    // Display timestamp showing last refresh.
+    lastUpdatedLabel.setText("Last update : " +
+            DateTimeFormat.getMediumDateTimeFormat().format(new Date()));
+
+    // Clear any errors.
+    errorMsgLabel.setVisible(false);
   }
 
   private void updateTable(StockPrice price) {

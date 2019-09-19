@@ -49,3 +49,11 @@ body {
 .negativeChange {
   color: red;
 }
+
+.negativeChange {
+      color: red;
+    }
+
+    .errorMessage {
+      color: red;
+    }
