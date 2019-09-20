@@ -1,4 +1,4 @@
-package ru.nemek.client;
+package ru.nemek.client.exceptoin;
 
 import java.io.Serializable;
 

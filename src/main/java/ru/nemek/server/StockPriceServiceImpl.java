@@ -4,9 +4,9 @@ import java.util.Random;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import ru.nemek.client.DelistedException;
-import ru.nemek.client.StockPrice;
-import ru.nemek.client.StockPriceService;
+import ru.nemek.client.exceptoin.DelistedException;
+import ru.nemek.client.model.StockPrice;
+import ru.nemek.client.service.StockPriceService;
 
 public class StockPriceServiceImpl extends RemoteServiceServlet implements StockPriceService {
     private static final double MAX_PRICE = 100.0; // $100.00
